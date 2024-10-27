@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+#hero .slide{
+    animation: slideHero 30s ease-in-out 0s infinite alternate;
+}
+
+@keyframes slideHero{
+    0%{
+        transform: translateX(0);
+    }
+    15%{
+        transform: translateX(0%);
+    }
+    25%{
+        transform: translateX(-25%);
+    }
+    40%{
+        transform: translateX(-25%)
+    }
+    50%{
+        transform: translateX(-50%);
+    }
+    75%{
+        transform: translateX(-50%);
+    }
+    85%{
+        transform: translateX(-75%);
+    }
+    100%{
+        transform: translateX(-75%);
+    }
+}
