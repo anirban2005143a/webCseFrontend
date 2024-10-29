@@ -74,7 +74,7 @@ const Profile = () => {
                             setisEditForm(true)
                         }} className='  bg-blue-600 rounded-md p-2 text-white font-semibold'>Edit Profile</button></div>
                         <div className="logout"><button onClick={()=>{
-                            navigate("/login")
+                            navigate("/signup")
                         }} className='  bg-red-600 rounded-md p-2 text-white font-semibold'>Log out</button></div>
                     </div>
                 </main>

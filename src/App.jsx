@@ -5,6 +5,7 @@ import {
 } from "react-router-dom";
 import Profile from './user/Profile'
 import Login from './components/forms/Login';
+import Signup from './components/forms/Signup';
 
 function App() {
 
@@ -16,6 +17,10 @@ function App() {
     {
       path: "/login",
       element: <Login />
+    },
+    {
+      path: "/signup",
+      element: <Signup />
     },
   ]);
 
