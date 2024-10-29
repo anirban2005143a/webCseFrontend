@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect ,  } from 'react'
+import { useNavigate } from 'react-router-dom'
 import EditProfile from '../components/forms/EditProfile'
 
 const Profile = () => {
 
     const [isEditForm, setisEditForm] = useState(false)
+
+    const navigate = useNavigate()
 
     useEffect(() => {
         isEditForm ? (() => {
@@ -53,7 +56,7 @@ const Profile = () => {
                         </div>
 
                         {/* description  */}
-                        <div className="desc p-2 font-normal text-[#505050] ">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quam ipsum iure quidem obcaecati, temporibus fuga nemo vitae accusamus, quis nesciunt ipsam nihil, assumenda eligendi? Distinctio error veritatis architecto ea culpa!</div>
+                        <div className="desc p-2 font-normal text-[#505050] text-sm">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quam ipsum iure quidem obcaecati, temporibus fuga nemo vitae accusamus, quis nesciunt ipsam nihil, assumenda eligendi? Distinctio error veritatis architecto ea culpa!</div>
 
                     </div>
 
@@ -70,10 +73,11 @@ const Profile = () => {
                         <div className="editProfile"><button onClick={() => {
                             setisEditForm(true)
                         }} className='  bg-blue-600 rounded-md p-2 text-white font-semibold'>Edit Profile</button></div>
-                        <div className="logout"><button className='  bg-red-600 rounded-md p-2 text-white font-semibold'>Log out</button></div>
+                        <div className="logout"><button onClick={()=>{
+                            navigate("/login")
+                        }} className='  bg-red-600 rounded-md p-2 text-white font-semibold'>Log out</button></div>
                     </div>
                 </main>
-
 
             </div>
 
