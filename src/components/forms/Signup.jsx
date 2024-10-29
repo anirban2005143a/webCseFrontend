@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import bgimg from "/formbg.webp"
 
 
@@ -83,12 +84,12 @@ l-5 -148 -385 0 c-428 0 -453 -3 -574 -66 -121 -63 -226 -189 -272 -323 l-22
                         </div>
                         <div className="password my-2 flex md:flex-row flex-col justify-between items-center">
                             {/* inputs for password  */}
-                            <div className="email md:w-2/5 w-full">
+                            <div className="password md:w-2/5 w-full">
                                 <label htmlFor="userpassword" className='px-2 md:text-base text-sm'>Enter password</label>
                                 <input id='userpassword' type='password' className='w-full my-1 rounded-full p-2 text-base text-black outline-none border-none' />
                             </div>
                             {/* inputs for new password  */}
-                            <div className="location md:w-2/5 w-full">
+                            <div className="repeat-password md:w-2/5 w-full">
                                 <label htmlFor="repeatpassword" className='px-2 md:text-base text-sm'>Repeat password</label>
                                 <input id='repeatpassword' type='password' className='w-full my-1 rounded-full p-2 text-base text-black outline-none border-none' />
                             </div>
@@ -96,8 +97,13 @@ l-5 -148 -385 0 c-428 0 -453 -3 -574 -66 -121 -63 -226 -189 -272 -323 l-22
                     </div>
 
                     {/* submit button  */}
-                    <div className=' flex justify-center my-6'>
+                    <div className=' flex justify-center mt-6'>
                         <button className=' md:text-base text-sm outline-none py-2 px-4 bg-blue-700 text-white rounded-full'>Create account</button>
+                    </div>
+
+                    {/* already have an account  */}
+                    <div className=' text-center font-light my-3 text-sm'>
+                        Already have an account ? <Link to="/login" className=' text-lg text-red-800 font-semibold hover:underline'>log-in</Link>
                     </div>
 
                 </form>
