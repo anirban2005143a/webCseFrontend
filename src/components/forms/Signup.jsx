@@ -4,20 +4,117 @@ import bgimg from "/formbg.webp"
 
 
 const Signup = () => {
+
+    const backendUrl = import.meta.env.VITE_REACT_BACKEND_URL
+
+    const checkPassword = () => {
+        const form = document.querySelector('form')
+        const p1 = form.querySelector('input#userpassword').value
+        const p2 = form.querySelector('input#repeatpassword').value
+        if (p1 === p2) return true
+        return false
+    }
+
+    const displaySelectedImages = (elem, file) => {
+
+        const label = elem.querySelector('label')
+        const img = elem.querySelector('img')
+
+        img.src = URL.createObjectURL(file)
+
+        img.classList.remove("hidden")
+
+
+        label.classList.contains("w-full") ? (() => {
+            label.classList.remove("w-full")
+            label.classList.add("w-8")
+        })() : (() => {
+            label.classList.remove("w-32")
+            label.classList.add("w-10")
+        })()
+
+        label.classList.contains("h-full") ? (() => {
+            label.classList.remove("h-full")
+            label.classList.add("h-8")
+            label.classList.add("bottom-[5%]" ,"right-0") 
+        })() : (() => {
+            label.classList.remove("h-32")
+            label.classList.add("h-10") 
+            label.classList.add("bottom-[-10%]" ,"right-[2%]") 
+        })()
+
+        label.classList.add("absolute" , "bg-white" , "p-2")
+
+    }
+
+    const creatAccount = () => {
+        checkPassword() ? (async () => {
+            try {
+                const form = document.querySelector('form')
+                console.log("start")
+
+                //creating formdata
+                let formdata = new FormData()
+                formdata.append('firstname', form.querySelector('input#firstname').value)
+                formdata.append('lastname', form.querySelector('input#lastname').value)
+                formdata.append('tags', form.querySelector('textarea#usertag').value)
+                formdata.append('about', form.querySelector('textarea#userabout').value)
+                formdata.append('email', form.querySelector('input#useremail').value)
+                formdata.append('location', form.querySelector('input#userlocation').value)
+                formdata.append('password', form.querySelector('input#userpassword').value)
+                
+                //sending api post request to create new user
+                let res = await fetch(`${backendUrl}/api/auth/create`, {
+                    method: "POST",
+                    headers: {},
+                    body: formdata
+                })
+                
+                let data = await res.json()
+                console.log(data)
+                
+                formdata = new FormData()
+                formdata.append('backgroundImg', form.querySelector('input#profileBackgroundImg').files[0])
+                formdata.append('profileImg', form.querySelector('input#profileimage').files[0])
+                formdata.append('userId' , data.userId)
+                // //upload images
+                res = await fetch(`${backendUrl}/api/upload/profileImg` , {
+                    method: "POST",
+                    headers: {},
+                    body: formdata
+                })
+
+                data = await res.json()
+                console.log(data)
+
+            } catch (error) {
+                console.log(error.message)
+            }
+
+        })() : (() => {
+
+        })()
+
+    }
+
     return (
         <div id='signup' className='bg-[#bbbbbb88] flex justify-center bg-cover bg-no-repeat' style={{ backgroundImage: `url(${bgimg})` }}>
             <div className="form md:w-7/12 sm:w-9/12 w-full md:p-3 p-2 md:m-4 sm:my-4 bg-[#7878785c] backdrop-blur-md">
                 <form action="" className=' w-full' onSubmit={(e) => {
                     e.preventDefault()
+                    creatAccount()
                 }}>
 
                     {/* profile image and background image section  */}
-                    <div className="profileImg h-[200px] bg-zinc-800 flex items-center justify-center relative rounded-md" >
+                    <div className="profile-background h-[200px] bg-zinc-800 relative rounded-md" >
                         {/* input for background image  */}
-                        <div className=' flex items-center justify-center'>
-                            <input type="file" accept='image/*' id='profileBackgroundImg' className=' hidden' />
-                            <label htmlFor="profileBackgroundImg" className=' cursor-pointer'>
-                                <svg className='w-32 h-32' version="1.0" xmlns="http://www.w3.org/2000/svg"
+                        <div className='w-full h-full flex items-center justify-center relative'>
+                            <input type="file" accept='image/*' id='profileBackgroundImg'
+                                onChange={(e) => {
+                                    displaySelectedImages(e.currentTarget.parentElement, e.currentTarget.files[0])
+                                }} className=' hidden' />
+                            <label htmlFor="profileBackgroundImg" className=' cursor-pointer w-32 h-32 z-10 rounded-full'>
+                                <svg className=' w-full h-full' version="1.0" xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 512.000000 512.000000"
                                     preserveAspectRatio="xMidYMid meet">
 
@@ -38,14 +135,20 @@ l-5 -148 -385 0 c-428 0 -453 -3 -574 -66 -121 -63 -226 -189 -272 -323 l-22
                                     </g>
                                 </svg>
                             </label>
+                            <img src="" alt="background-image" className=' w-full h-full top-0 left-0 hidden object-center object-cover brightness-[60%]' />
                         </div>
-
                         {/* input for profile picture  */}
-                        <div className=' absolute top-[70%] left-1/2 -translate-x-1/2 w-32 h-32 rounded-full bg-[#cccfd5] cursor-pointer'>
-                            <input type="file" accept='image/*' id='profileimage' className=' hidden' />
-                            <label htmlFor="profileimage" className=' w-full h-full rounded-full flex justify-center items-center'>
-                                <svg className='w-12 h-12' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill='#525151' d="M149.1 64.8L138.7 96 64 96C28.7 96 0 124.7 0 160L0 416c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-256c0-35.3-28.7-64-64-64l-74.7 0L362.9 64.8C356.4 45.2 338.1 32 317.4 32L194.6 32c-20.7 0-39 13.2-45.5 32.8zM256 192a96 96 0 1 1 0 192 96 96 0 1 1 0-192z" /></svg>
-                            </label>
+                        <div className=' absolute top-[70%] left-1/2 -translate-x-1/2 w-32 h-32 rounded-full bg-[#cccfd5] cursor-pointer z-10'>
+                            <div className=' relative w-full h-full'>
+                                <input type="file" accept='image/*' id='profileimage'
+                                    onChange={(e) => {
+                                        displaySelectedImages(e.currentTarget.parentElement, e.currentTarget.files[0])
+                                    }} className=' hidden' />
+                                <label htmlFor="profileimage" className='w-full h-full rounded-full z-10 flex justify-center items-center'>
+                                    <svg className=' w-12 h-12' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill='#525151' d="M149.1 64.8L138.7 96 64 96C28.7 96 0 124.7 0 160L0 416c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-256c0-35.3-28.7-64-64-64l-74.7 0L362.9 64.8C356.4 45.2 338.1 32 317.4 32L194.6 32c-20.7 0-39 13.2-45.5 32.8zM256 192a96 96 0 1 1 0 192 96 96 0 1 1 0-192z" /></svg>
+                                </label>
+                                <img src="" alt="profile-image" className='rounded-full absolute w-full h-full top-0 left-0 hidden object-cover object-center' />
+                            </div>
                         </div>
                     </div>
 

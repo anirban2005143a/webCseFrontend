@@ -3,11 +3,14 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
+import UserContext from './context/usercontext';
 import Profile from './user/Profile'
 import Login from './components/forms/Login';
 import Signup from './components/forms/Signup';
 
 function App() {
+
+  const backendUrl = import.meta.env.VITE_REACT_BACKEND_URL
 
   const router = createBrowserRouter([
     {
@@ -25,7 +28,12 @@ function App() {
   ]);
 
   return (
-    <RouterProvider router={router} />
+    <UserContext.Provider value={{
+      
+    }}>
+
+      <RouterProvider router={router} />
+    </UserContext.Provider>
   )
 }
 
