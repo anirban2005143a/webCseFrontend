@@ -1,10 +1,10 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React , {useState , useEffect , useContext} from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import bgimg from "/formbg.webp"
-
 
 const Signup = () => {
 
+    const navigate = useNavigate()
     const backendUrl = import.meta.env.VITE_REACT_BACKEND_URL
 
     const checkPassword = () => {
@@ -36,25 +36,36 @@ const Signup = () => {
         label.classList.contains("h-full") ? (() => {
             label.classList.remove("h-full")
             label.classList.add("h-8")
-            label.classList.add("bottom-[5%]" ,"right-0") 
+            label.classList.add("bottom-[5%]", "right-0")
         })() : (() => {
             label.classList.remove("h-32")
-            label.classList.add("h-10") 
-            label.classList.add("bottom-[-10%]" ,"right-[2%]") 
+            label.classList.add("h-10")
+            label.classList.add("bottom-[-10%]", "right-[2%]")
         })()
 
-        label.classList.add("absolute" , "bg-white" , "p-2")
+        label.classList.add("absolute", "bg-white", "p-2")
 
     }
 
-    const creatAccount = () => {
+    const creatAccount = (form) => {
         checkPassword() ? (async () => {
             try {
-                const form = document.querySelector('form')
-                console.log("start")
-
                 //creating formdata
                 let formdata = new FormData()
+                formdata.append('backgroundImg', form.querySelector('input#profileBackgroundImg').files[0])
+                formdata.append('profileImg', form.querySelector('input#profileimage').files[0])
+
+                // //upload images
+                let res = await fetch(`${backendUrl}/api/upload/profileImg`, {
+                    method: "POST",
+                    headers: {},
+                    body: formdata
+                })
+                let data = await res.json()
+                // console.log(data)
+
+                //form data for storing other details
+                formdata = new FormData()
                 formdata.append('firstname', form.querySelector('input#firstname').value)
                 formdata.append('lastname', form.querySelector('input#lastname').value)
                 formdata.append('tags', form.querySelector('textarea#usertag').value)
@@ -62,37 +73,29 @@ const Signup = () => {
                 formdata.append('email', form.querySelector('input#useremail').value)
                 formdata.append('location', form.querySelector('input#userlocation').value)
                 formdata.append('password', form.querySelector('input#userpassword').value)
-                
-                //sending api post request to create new user
-                let res = await fetch(`${backendUrl}/api/auth/create`, {
-                    method: "POST",
-                    headers: {},
-                    body: formdata
-                })
-                
-                let data = await res.json()
-                console.log(data)
-                
-                formdata = new FormData()
-                formdata.append('backgroundImg', form.querySelector('input#profileBackgroundImg').files[0])
-                formdata.append('profileImg', form.querySelector('input#profileimage').files[0])
-                formdata.append('userId' , data.userId)
-                // //upload images
-                res = await fetch(`${backendUrl}/api/upload/profileImg` , {
-                    method: "POST",
-                    headers: {},
-                    body: formdata
-                })
+                formdata.append('fileName', data.pathId)
 
+                //sending api post request to create new user
+                res = await fetch(`${backendUrl}/api/auth/create`, {
+                    method: "POST",
+                    headers: {},
+                    body: formdata
+                })
                 data = await res.json()
-                console.log(data)
+                // console.log(data)
+                
+                //store user id and token to localStorage
+                localStorage.setItem('userId' , data.userId)
+                localStorage.setItem('token' , data.token)
+
+                navigate('/')
 
             } catch (error) {
                 console.log(error.message)
             }
 
         })() : (() => {
-
+            console.log("Please repeat with same password")
         })()
 
     }
@@ -102,7 +105,7 @@ const Signup = () => {
             <div className="form md:w-7/12 sm:w-9/12 w-full md:p-3 p-2 md:m-4 sm:my-4 bg-[#7878785c] backdrop-blur-md">
                 <form action="" className=' w-full' onSubmit={(e) => {
                     e.preventDefault()
-                    creatAccount()
+                    creatAccount(e.currentTarget)
                 }}>
 
                     {/* profile image and background image section  */}
@@ -211,6 +214,8 @@ l-5 -148 -385 0 c-428 0 -453 -3 -574 -66 -121 -63 -226 -189 -272 -323 l-22
 
                 </form>
             </div>
+
+            {/* <ToastContainer /> */}
         </div>
     )
 }

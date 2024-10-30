@@ -3,8 +3,6 @@ import React from 'react'
 
 const EditProfile = (props) => {
 
-
-
     return (
         <div id='editProfile' className={`md:w-7/12 w-full md:my-10 my-4 overflow-auto`}>
 
@@ -24,7 +22,7 @@ const EditProfile = (props) => {
                 {/* edit name and other details  */}
 
                 {/*edit name*/}<div className=' my-6'>
-                    <label for="inputname" className="block text-gray-800 font-semibold text-sm">Enter Name</label>
+                    <label htmlFor="inputname" className="block text-gray-800 font-semibold text-sm">Enter Name</label>
                     <div className="mt-2">
                         <input
                             type="text"
@@ -36,7 +34,7 @@ const EditProfile = (props) => {
                 </div>
 
                 {/*edit tag*/}<div className=' my-6'>
-                    <label for="inputname" className="block text-gray-800 font-semibold text-sm">Enter your tag</label>
+                    <label htmlFor="inputname" className="block text-gray-800 font-semibold text-sm">Enter your tag</label>
                     <div className="mt-2">
                         <textarea
                             type="text"
@@ -48,7 +46,7 @@ const EditProfile = (props) => {
                 </div>
 
                 {/*edit about*/}<div className=' my-6'>
-                    <label for="inputname" className="block text-gray-800 font-semibold text-sm">About yourseft</label>
+                    <label htmlFor="inputname" className="block text-gray-800 font-semibold text-sm">About yourseft</label>
                     <div className="mt-2">
                         <textarea
                             type="text"

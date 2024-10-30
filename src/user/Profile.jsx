@@ -1,16 +1,39 @@
-import React, { useState, useEffect ,  } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import EditProfile from '../components/forms/EditProfile'
+import userContext from '../context/usercontext'
 
 const Profile = () => {
 
+    const value = useContext(userContext)
     const [isEditForm, setisEditForm] = useState(false)
 
     const navigate = useNavigate()
+    const backendUrl = import.meta.env.VITE_REACT_BACKEND_URL
+
+    const fetchData = async()=>{
+        const res = await fetch(`${backendUrl}/api/auth/fetch` , {
+            method : "POST",
+            headers: {
+                "Content-Type": "application/json",
+                token: localStorage.getItem("token"),
+            },
+            body:JSON.stringify({
+                userId : localStorage.getItem('userId'),
+            })
+        })
+        const data = await res.json()
+        console.log(data)
+    }
+
+    useEffect(() => {
+        !value.checkUser() ? navigate("/login") :  fetchData()
+      
+    }, [])
 
     useEffect(() => {
         isEditForm ? (() => {
-            window.scrollTo(0,0)
+            window.scrollTo(0, 0)
             setTimeout(() => {
                 document.body.style.overflow = 'hidden'
             }, 1000);
@@ -73,8 +96,8 @@ const Profile = () => {
                         <div className="editProfile"><button onClick={() => {
                             setisEditForm(true)
                         }} className='  bg-blue-600 rounded-md p-2 text-white font-semibold'>Edit Profile</button></div>
-                        <div className="logout"><button onClick={()=>{
-                            navigate("/signup")
+                        <div className="logout"><button onClick={() => {
+                            navigate("/login")
                         }} className='  bg-red-600 rounded-md p-2 text-white font-semibold'>Log out</button></div>
                     </div>
                 </main>
