@@ -10,14 +10,24 @@ import Signup from './components/forms/Signup';
 
 function App() {
 
-  // const [isUser, setisUser] = useState(false) 
   const backendUrl = import.meta.env.VITE_REACT_BACKEND_URL
 
   //function to check is user or not
-  const checkUser = () => {
+  const checkUser = async () => {
     const userId = localStorage.getItem('userId')
     const token = localStorage.getItem('token')
-    return userId && token ? true : false
+
+    const res = await fetch(`${backendUrl}/api/auth/checkUser`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        token,
+      },
+      body: JSON.stringify({ userId })
+    })
+    const data = await res.json()
+    // console.log(data)
+    return data.error ? false : true
   }
 
   const router = createBrowserRouter([

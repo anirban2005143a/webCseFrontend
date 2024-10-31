@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
+import JSZip from 'jszip';
 import EditProfile from '../components/forms/EditProfile'
 import userContext from '../context/usercontext'
+
 
 const Profile = () => {
 
     const value = useContext(userContext)
     const [isEditForm, setisEditForm] = useState(false)
+    const [userDetails, setuserDetails] = useState({})
 
     const navigate = useNavigate()
     const backendUrl = import.meta.env.VITE_REACT_BACKEND_URL
@@ -23,12 +26,30 @@ const Profile = () => {
             })
         })
         const data = await res.json()
-        console.log(data)
+        // console.log(data)
+
+        //fetch images
+        // await fetchImages(data.user.fileName + ".jpg")
+
+        setuserDetails(data.user)
+    }
+
+    const fetchImages = async(filename)=>{
+        const token = localStorage.getItem('token')
+        const userId = localStorage.getItem('userId')
+        const res = await fetch(`${backendUrl}/api/auth/images?token=${token}&userId=${userId}&filename=${filename}`)
+
+        // Convert the response into a Blob
+        const zipBlob = await res.blob();
+
+        // Load the Blob into JSZip
+        const zip = await JSZip.loadAsync(zipBlob);
+
+        console.log(zip.files)
     }
 
     useEffect(() => {
         !value.checkUser() ? navigate("/login") :  fetchData()
-      
     }, [])
 
     useEffect(() => {
@@ -39,7 +60,6 @@ const Profile = () => {
             }, 1000);
         })() : document.body.style.overflow = ''
     }, [isEditForm])
-
 
     return (
         <div id='profile' className='flex  justify-center relative' >
@@ -54,7 +74,7 @@ const Profile = () => {
                 {/* profile picture and name , tag , location , connections  */}
                 <header className=' '>
 
-                    {/* background img  */} <div className="images relative w-full h-[150px] bg-cover bg-[rgba(0,0,0,0.56)] bg-blend-overlay user-select-none rounded-md" style={{ backgroundImage: "url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCZlf5lc5tX-0gY-y94pGS0mQdL-D0lCH2OQ&s)" }}>
+                    {/* background img  */} <div className="images relative w-full h-[150px] bg-cover bg-[rgba(0,0,0,0.56)] bg-blend-overlay user-select-none rounded-md" style={{backgroundImage : "url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCZlf5lc5tX-0gY-y94pGS0mQdL-D0lCH2OQ&s)" }}>
 
                         {/* profile image  */} <div className="profileImg absolute -bottom-[25%] left-0 rounded-full sm:w-36 w-28 sm:h-36 h-28 border-2 border-white m-3">
                             <img className=' w-full h-full object-cover object-center rounded-full'
@@ -64,9 +84,9 @@ const Profile = () => {
                     </div>
                     {/* profile intro  */}
                     <div className="name-tag-location md:w-10/12 w-full mt-6 p-2  ">
-                        {/* name and connection  */} <div className="name text-2xl font-bold">Anirban Das <span className='connections text-[0.8rem] font-normal px-3 cursor-pointer hover:underline hover:text-blue-800 '>200+ connections</span></div>
-                        {/* tag  */} <div className="tag text-lg font-normal">Full stack web developer,Full stack web developer,Full stack web developer</div>
-                        {/* location  */} <div className="location text-sm font-thin text-[rgb(63,63,63)] py-3 ">Kolkata , West Bengal</div>
+                        {/* name and connection  */} <div className="name text-2xl font-bold">{Object.keys(userDetails).length === 0 ? 'Anirban Das' : userDetails.firstname + userDetails.lastname} <span className='connections text-[0.8rem] font-normal px-3 cursor-pointer hover:underline hover:text-blue-800 '>200+ connections</span></div>
+                        {/* tag  */} <div className="tag text-lg font-normal">{ Object.keys(userDetails).length === 0 ? "Full stack web developer,Full stack web developer,Full stack web developer" : userDetails.tags}</div>
+                        {/* location  */} <div className="location text-sm font-thin text-[rgb(63,63,63)] py-3 ">{ Object.keys(userDetails).length === 0 ? "Kolkata , West Bengal" : userDetails.location}</div>
                     </div>
                 </header>
 
@@ -79,7 +99,7 @@ const Profile = () => {
                         </div>
 
                         {/* description  */}
-                        <div className="desc p-2 font-normal text-[#505050] text-sm">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quam ipsum iure quidem obcaecati, temporibus fuga nemo vitae accusamus, quis nesciunt ipsam nihil, assumenda eligendi? Distinctio error veritatis architecto ea culpa!</div>
+                        <div className="desc p-2 font-normal text-[#505050] text-sm">{Object.keys(userDetails).length === 0 ? "" : userDetails.about}</div>
 
                     </div>
 
