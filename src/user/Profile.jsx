@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
-import JSZip from 'jszip';
 import EditProfile from '../components/forms/EditProfile'
 import userContext from '../context/usercontext'
 
@@ -10,46 +9,49 @@ const Profile = () => {
     const value = useContext(userContext)
     const [isEditForm, setisEditForm] = useState(false)
     const [userDetails, setuserDetails] = useState({})
+    const [profileImg, setprofileImg] = useState(null)
+    const [backgroundImg, setbackgroundImg] = useState(null)
 
     const navigate = useNavigate()
     const backendUrl = import.meta.env.VITE_REACT_BACKEND_URL
 
-    const fetchData = async()=>{
-        const res = await fetch(`${backendUrl}/api/auth/fetch` , {
-            method : "POST",
+    const fetchData = async () => {
+        const res = await fetch(`${backendUrl}/api/auth/fetch`, {
+            method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 token: localStorage.getItem("token"),
             },
-            body:JSON.stringify({
-                userId : localStorage.getItem('userId'),
+            body: JSON.stringify({
+                userId: localStorage.getItem('userId'),
             })
         })
         const data = await res.json()
-        // console.log(data)
+        console.log(data)
 
         //fetch images
-        // await fetchImages(data.user.fileName + ".jpg")
+        await fetchProfileImg(data.user.fileName)
+        await fetchBackgroundImg(data.user.fileName)
 
         setuserDetails(data.user)
     }
 
-    const fetchImages = async(filename)=>{
+    const fetchProfileImg = async (filename) => {
         const token = localStorage.getItem('token')
         const userId = localStorage.getItem('userId')
-        const res = await fetch(`${backendUrl}/api/auth/images?token=${token}&userId=${userId}&filename=${filename}`)
+        const res = await fetch(`${backendUrl}/api/auth/profileImg?token=${token}&userId=${userId}&filename=${filename}`)
+        setprofileImg(res.url)
+    }
 
-        // Convert the response into a Blob
-        const zipBlob = await res.blob();
-
-        // Load the Blob into JSZip
-        const zip = await JSZip.loadAsync(zipBlob);
-
-        console.log(zip.files)
+    const fetchBackgroundImg = async (filename) => {
+        const token = localStorage.getItem('token')
+        const userId = localStorage.getItem('userId')
+        const res = await fetch(`${backendUrl}/api/auth/backgroundImg?token=${token}&userId=${userId}&filename=${filename}`)
+        setbackgroundImg(res.url)
     }
 
     useEffect(() => {
-        !value.checkUser() ? navigate("/login") :  fetchData()
+        !value.checkUser() ? navigate("/login") : fetchData()
     }, [])
 
     useEffect(() => {
@@ -66,7 +68,10 @@ const Profile = () => {
 
             {/* form modal  */}
             <div className={` absolute top-0 left-0 w-full h-[100vh] flex justify-center z-10 bg-[rgba(0,0,0,0.5)] transition-all duration-1000 ${isEditForm ? " translate-y-0 " : " -translate-y-[150%] "}`}>
-                <EditProfile isEditForm={isEditForm} setisEditForm={setisEditForm} />
+                <EditProfile
+                    isEditForm={isEditForm}
+                    setisEditForm={setisEditForm}
+                    setuserDetails={setuserDetails}/>
             </div>
 
             <div className=' md:w-8/12 w-full md:p-3 p-2 md:m-4'>
@@ -74,19 +79,24 @@ const Profile = () => {
                 {/* profile picture and name , tag , location , connections  */}
                 <header className=' '>
 
-                    {/* background img  */} <div className="images relative w-full h-[150px] bg-cover bg-[rgba(0,0,0,0.56)] bg-blend-overlay user-select-none rounded-md" style={{backgroundImage : "url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCZlf5lc5tX-0gY-y94pGS0mQdL-D0lCH2OQ&s)" }}>
+                    {/* background img  */} <div className="images relative w-full h-[150px] bg-cover bg-[rgba(0,0,0,0.56)] bg-blend-overlay user-select-none rounded-md"
+                        style={{
+                            backgroundImage: `${!backgroundImg ?
+                                "url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCZlf5lc5tX-0gY-y94pGS0mQdL-D0lCH2OQ&s)" :
+                                `url(${backgroundImg})`}`
+                        }}>
 
                         {/* profile image  */} <div className="profileImg absolute -bottom-[25%] left-0 rounded-full sm:w-36 w-28 sm:h-36 h-28 border-2 border-white m-3">
                             <img className=' w-full h-full object-cover object-center rounded-full'
-                                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWuVuPcj7aQr6kzZkw0D94IOKcF2uBccRPmw&s"
+                                src={!profileImg ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWuVuPcj7aQr6kzZkw0D94IOKcF2uBccRPmw&s" : `${profileImg}`}
                                 alt="profile-image" />
                         </div>
                     </div>
                     {/* profile intro  */}
                     <div className="name-tag-location md:w-10/12 w-full mt-6 p-2  ">
                         {/* name and connection  */} <div className="name text-2xl font-bold">{Object.keys(userDetails).length === 0 ? 'Anirban Das' : userDetails.firstname + userDetails.lastname} <span className='connections text-[0.8rem] font-normal px-3 cursor-pointer hover:underline hover:text-blue-800 '>200+ connections</span></div>
-                        {/* tag  */} <div className="tag text-lg font-normal">{ Object.keys(userDetails).length === 0 ? "Full stack web developer,Full stack web developer,Full stack web developer" : userDetails.tags}</div>
-                        {/* location  */} <div className="location text-sm font-thin text-[rgb(63,63,63)] py-3 ">{ Object.keys(userDetails).length === 0 ? "Kolkata , West Bengal" : userDetails.location}</div>
+                        {/* tag  */} <div className="tag text-lg font-normal">{Object.keys(userDetails).length === 0 ? "Full stack web developer,Full stack web developer,Full stack web developer" : userDetails.tags}</div>
+                        {/* location  */} <div className="location text-sm font-thin text-[rgb(63,63,63)] py-3 ">{Object.keys(userDetails).length === 0 ? "Kolkata , West Bengal" : userDetails.location}</div>
                     </div>
                 </header>
 
