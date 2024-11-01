@@ -71,7 +71,9 @@ const Profile = () => {
                 <EditProfile
                     isEditForm={isEditForm}
                     setisEditForm={setisEditForm}
-                    setuserDetails={setuserDetails}/>
+                    userDetails={userDetails}
+                    setuserDetails={setuserDetails}
+                    profileImg={profileImg}/>
             </div>
 
             <div className=' md:w-8/12 w-full md:p-3 p-2 md:m-4'>

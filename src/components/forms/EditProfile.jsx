@@ -1,9 +1,16 @@
 import React from 'react'
-// import "../../css/form.css"
 
 const EditProfile = (props) => {
 
     const backendUrl = import.meta.env.VITE_REACT_BACKEND_URL
+
+    const displaySelectedImages = (file) => {
+
+        const img = document.querySelector('#editProfile').querySelector(".profileImg").querySelector('img')
+        const url = URL.createObjectURL(file)
+
+        img.src = url
+    }
 
     const editUser = async (form) => {
         const res = await fetch(`${backendUrl}/api/auth/edit`, {
@@ -34,17 +41,20 @@ const EditProfile = (props) => {
         <div id='editProfile' className={`md:w-7/12 w-full md:my-10 my-4 overflow-auto`}>
 
             <div className=' relative'>
-                <form action="" className=' bg-slate-100 w-full p-4  rounded-md ' onSubmit={(e)=>{
+                <form action="" className=' bg-slate-100 w-full p-4  rounded-md ' onSubmit={(e) => {
                     e.preventDefault()
                     editUser(e.currentTarget)
                 }}>
                     {/* edit profile picture  */}
                     <div className="profileImg w-full flex justify-center items-center my-6">
                         <div className="img rounded-full border-2 border-white sm:w-36 w-28 sm:h-36 h-28 relative">
-                            <img className='w-full h-full object-cover object-center rounded-full' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWuVuPcj7aQr6kzZkw0D94IOKcF2uBccRPmw&s" alt="profile image" />
+                            <img className='w-full h-full object-cover object-center rounded-full' src={props.profileImg} alt="profile image" />
 
                             {/* image input for edit  */}
-                            <input type="file" accept='image/*' id='choosenProfileImg' className=' hidden ' />
+                            <input type="file" accept='image/*' id='choosenProfileImg' className=' hidden ' onChange={(e) => {
+                                e.preventDefault()
+                                displaySelectedImages(e.currentTarget.files[0])
+                            }} />
                             <label htmlFor='choosenProfileImg' className="editIcon cursor-pointer absolute bottom-0 right-[5%] bg-black text-white text-xl p-2 rounded-full"><svg className='w-5 h-5' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="white" d="M149.1 64.8L138.7 96 64 96C28.7 96 0 124.7 0 160L0 416c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-256c0-35.3-28.7-64-64-64l-74.7 0L362.9 64.8C356.4 45.2 338.1 32 317.4 32L194.6 32c-20.7 0-39 13.2-45.5 32.8zM256 192a96 96 0 1 1 0 192 96 96 0 1 1 0-192z" /></svg></label>
                         </div>
                     </div>
