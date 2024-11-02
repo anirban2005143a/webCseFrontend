@@ -13,28 +13,64 @@ const EditProfile = (props) => {
     }
 
     const editUser = async (form) => {
+
+        //upload profileimg
+        const filename = await editProfileImgUpload(form)
+
+        const bodyObj = {
+            userId: localStorage.getItem('userId'),
+            location: form.querySelector('input#editLocation').value,
+            tags: form.querySelector('textarea#edittags').value,
+            about: form.querySelector('textarea#editabout').value,
+        }
+        filename ? bodyObj.profileImg = filename : "" 
+        
         const res = await fetch(`${backendUrl}/api/auth/edit`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 token: localStorage.getItem("token"),
             },
-            body: JSON.stringify({
-                userId: localStorage.getItem('userId'),
-                location: form.querySelector('input#editLocation').value,
-                tags: form.querySelector('textarea#edittags').value,
-                about: form.querySelector('textarea#editabout').value,
-            })
+            body: JSON.stringify(bodyObj)
         })
         const data = await res.json()
 
-        // console.log(data.user)
+        console.log(data.user)
         props.setuserDetails(data.user)
 
         //update Profile img
 
         const closeBtn = document.querySelector('#editProfile').querySelector("button.closeBtn")
         closeBtn.click()
+    }
+
+    //edit img function 
+    const editProfileImgUpload = async (form) => {
+        const inputImg = form.querySelector('input#choosenProfileImg')
+        const img = form.querySelector('img#profileImg')
+
+        const formdata = new FormData()
+        formdata.append('profileImg', inputImg.files[0])
+        formdata.append('userId', localStorage.getItem('userId'))
+
+        if (img.src !== props.profileImg) {
+            const res = await fetch(`${backendUrl}/api/upload/edit/img`, {
+                method: "POST",
+                headers: {
+                    token: localStorage.getItem("token"),
+                },
+                body: formdata
+            })
+            const data = await res.json()
+            console.log(data)
+            if (data.error) {
+
+            } else {
+                return data.pathId
+            }
+        } else {
+            return null;
+        }
     }
 
     return (
@@ -48,7 +84,7 @@ const EditProfile = (props) => {
                     {/* edit profile picture  */}
                     <div className="profileImg w-full flex justify-center items-center my-6">
                         <div className="img rounded-full border-2 border-white sm:w-36 w-28 sm:h-36 h-28 relative">
-                            <img className='w-full h-full object-cover object-center rounded-full' src={props.profileImg} alt="profile image" />
+                            <img id='profileImg' className='w-full h-full object-cover object-center rounded-full' src={props.profileImg} alt="profile image" />
 
                             {/* image input for edit  */}
                             <input type="file" accept='image/*' id='choosenProfileImg' className=' hidden ' onChange={(e) => {

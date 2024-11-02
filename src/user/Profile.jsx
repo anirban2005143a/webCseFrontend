@@ -30,8 +30,8 @@ const Profile = () => {
         console.log(data)
 
         //fetch images
-        await fetchProfileImg(data.user.fileName)
-        await fetchBackgroundImg(data.user.fileName)
+        await fetchProfileImg(data.user.profileImg)
+        await fetchBackgroundImg(data.user.backgroundImg)
 
         setuserDetails(data.user)
     }
