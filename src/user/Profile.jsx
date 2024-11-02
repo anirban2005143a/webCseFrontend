@@ -56,12 +56,11 @@ const Profile = () => {
 
     useEffect(() => {
         isEditForm ? (() => {
+            document.body.style.overflow = 'hidden'
             window.scrollTo(0, 0)
-            setTimeout(() => {
-                document.body.style.overflow = 'hidden'
-            }, 1000);
         })() : document.body.style.overflow = ''
     }, [isEditForm])
+
 
     return (
         <div id='profile' className='flex  justify-center relative' >
@@ -73,7 +72,8 @@ const Profile = () => {
                     setisEditForm={setisEditForm}
                     userDetails={userDetails}
                     setuserDetails={setuserDetails}
-                    profileImg={profileImg}/>
+                    profileImg={profileImg}
+                    fetchProfileImg={fetchProfileImg}/>
             </div>
 
             <div className=' md:w-8/12 w-full md:p-3 p-2 md:m-4'>
@@ -96,7 +96,7 @@ const Profile = () => {
                     </div>
                     {/* profile intro  */}
                     <div className="name-tag-location md:w-10/12 w-full mt-6 p-2  ">
-                        {/* name and connection  */} <div className="name text-2xl font-bold">{Object.keys(userDetails).length === 0 ? 'Anirban Das' : userDetails.firstname + userDetails.lastname} <span className='connections text-[0.8rem] font-normal px-3 cursor-pointer hover:underline hover:text-blue-800 '>200+ connections</span></div>
+                        {/* name and connection  */} <div className="name text-2xl font-bold">{Object.keys(userDetails).length === 0 ? 'Anirban Das' : userDetails.firstname + " " + userDetails.lastname} <span className='connections text-[0.8rem] font-normal px-3 cursor-pointer hover:underline hover:text-blue-800 '>200+ connections</span></div>
                         {/* tag  */} <div className="tag text-lg font-normal">{Object.keys(userDetails).length === 0 ? "Full stack web developer,Full stack web developer,Full stack web developer" : userDetails.tags}</div>
                         {/* location  */} <div className="location text-sm font-thin text-[rgb(63,63,63)] py-3 ">{Object.keys(userDetails).length === 0 ? "Kolkata , West Bengal" : userDetails.location}</div>
                     </div>

@@ -9,6 +9,7 @@ const Login = () => {
 
     //function to login
     const login = async (form) => {
+        
         const res = await fetch(`${backendUrl}/api/auth/login`, {
             method: "POST",
             headers: {

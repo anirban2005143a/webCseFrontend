@@ -66,6 +66,7 @@ const EditProfile = (props) => {
             if (data.error) {
 
             } else {
+                props.fetchProfileImg(data.pathId)
                 return data.pathId
             }
         } else {
