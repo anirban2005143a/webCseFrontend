@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import EditProfile from '../components/forms/EditProfile'
 import userContext from '../context/usercontext'
+import LoadingPage from '../components/utiles/LoadingPage'
 
 
 const Profile = () => {
@@ -65,6 +66,9 @@ const Profile = () => {
     return (
         <div id='profile' className='flex  justify-center relative' >
 
+            {/* loading icon while data is fetching  */}
+            {Object.keys(userDetails).length === 0 && <LoadingPage/>}
+
             {/* form modal  */}
             <div className={` absolute top-0 left-0 w-full h-[100vh] flex justify-center z-10 bg-[rgba(0,0,0,0.5)] transition-all duration-1000 ${isEditForm ? " translate-y-0 " : " -translate-y-[150%] "}`}>
                 <EditProfile
@@ -76,7 +80,7 @@ const Profile = () => {
                     fetchProfileImg={fetchProfileImg}/>
             </div>
 
-            <div className=' md:w-8/12 w-full md:p-3 p-2 md:m-4'>
+           {Object.keys(userDetails).length !== 0 && <div className=' md:w-8/12 w-full md:p-3 p-2 md:m-4'>
 
                 {/* profile picture and name , tag , location , connections  */}
                 <header className=' '>
@@ -134,7 +138,7 @@ const Profile = () => {
                     </div>
                 </main>
 
-            </div>
+            </div>}
 
         </div>
     )

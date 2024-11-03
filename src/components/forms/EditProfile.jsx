@@ -1,6 +1,13 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import Alert from '../utiles/Alert'
 
 const EditProfile = (props) => {
+
+
+    const [isAlert, setisAlert] = useState(false)
+    const [alertMessage, setalertMessage] = useState("")
+    const [alertType, setalertType] = useState("danger")
+    const [isLoading, setisLoading] = useState(false)
 
     const backendUrl = import.meta.env.VITE_REACT_BACKEND_URL
 
@@ -8,6 +15,16 @@ const EditProfile = (props) => {
 
         const img = document.querySelector('#editProfile').querySelector(".profileImg").querySelector('img')
         const url = URL.createObjectURL(file)
+
+        const maxSize = 5 * 1024 * 1024
+        console.log(file.size)
+        if (file.size > maxSize) {
+            setisAlert(true)
+            setalertMessage("Use a samller image with maximum size 2mb")
+            setalertType("danger")
+            setisLoading(false)
+            return false;
+        }
 
         img.src = url
     }
@@ -23,25 +40,38 @@ const EditProfile = (props) => {
             tags: form.querySelector('textarea#edittags').value,
             about: form.querySelector('textarea#editabout').value,
         }
-        filename ? bodyObj.profileImg = filename : "" 
-        
-        const res = await fetch(`${backendUrl}/api/auth/edit`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                token: localStorage.getItem("token"),
-            },
-            body: JSON.stringify(bodyObj)
-        })
-        const data = await res.json()
+        filename ? bodyObj.profileImg = filename : ""
 
-        console.log(data.user)
-        props.setuserDetails(data.user)
+        try {
+            const res = await fetch(`${backendUrl}/api/auth/edit`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    token: localStorage.getItem("token"),
+                },
+                body: JSON.stringify(bodyObj)
+            })
+            const data = await res.json()
+            setisLoading(false)
+            console.log(data.user)
+            if (data.error) {
+                setisAlert(true)
+                setalertMessage(data.message)
+                setalertType("danger")
+                return;
+            }
+            props.setuserDetails(data.user)
 
-        //update Profile img
+            const closeBtn = document.querySelector('#editProfile').querySelector("button.closeBtn")
+            closeBtn.click()
+        } catch (error) {
+            console.log(error)
+            setisAlert(true)
+            setalertMessage(error.message)
+            setalertType("danger")
+            setisLoading(false)
+        }
 
-        const closeBtn = document.querySelector('#editProfile').querySelector("button.closeBtn")
-        closeBtn.click()
     }
 
     //edit img function 
@@ -64,7 +94,11 @@ const EditProfile = (props) => {
             const data = await res.json()
             console.log(data)
             if (data.error) {
-
+                setisAlert(true)
+                setalertMessage(data.message)
+                setalertType("danger")
+                setisLoading(false)
+                return null;
             } else {
                 props.fetchProfileImg(data.pathId)
                 return data.pathId
@@ -74,12 +108,27 @@ const EditProfile = (props) => {
         }
     }
 
+
+    useEffect(() => {
+        if (isAlert) {
+            setTimeout(() => {
+                setisAlert(false)
+            }, 2000);
+        }
+    }, [isAlert])
+
     return (
-        <div id='editProfile' className={`md:w-7/12 w-full md:my-10 my-4 overflow-auto`}>
+        <div id='editProfile' className={`md:w-7/12 w-full md:my-10 my-4 overflow-auto relative`}>
+            {/* alert component  */}
+
+            {isAlert && <div className=' fixed z-50 top-0 left-0 w-full'>
+                <Alert type={alertType} message={alertMessage} />
+            </div>}
 
             <div className=' relative'>
                 <form action="" className=' bg-slate-100 w-full p-4  rounded-md ' onSubmit={(e) => {
                     e.preventDefault()
+                    setisLoading(true)
                     editUser(e.currentTarget)
                 }}>
                     {/* edit profile picture  */}
@@ -136,7 +185,9 @@ const EditProfile = (props) => {
 
                     {/* submit button  */}
                     <div className=' flex justify-center '>
-                        <button className=' bg-blue-600 text-lg text-white font-semibold p-2 rounded-md '>Apply changes</button>
+                        <button className=' bg-blue-600 text-lg text-white font-semibold p-2 rounded-md '>
+                            {isLoading ? <i className="fa-solid fa-spinner fa-spin text-2xl"></i> : "Apply changes"}
+                        </button>
                     </div>
 
                 </form>

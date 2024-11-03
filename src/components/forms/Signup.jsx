@@ -1,8 +1,14 @@
-import React , {useState , useEffect , useContext} from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import bgimg from "/formbg.webp"
+import Alert from '../utiles/Alert'
 
 const Signup = () => {
+
+    const [isAlert, setisAlert] = useState(false)
+    const [alertMessage, setalertMessage] = useState("bdfgur idfuvnreg rfgthg")
+    const [alertType, setalertType] = useState("danger")
+    const [isLoading, setisLoading] = useState(false)
 
     const navigate = useNavigate()
     const backendUrl = import.meta.env.VITE_REACT_BACKEND_URL
@@ -12,13 +18,27 @@ const Signup = () => {
         const p1 = form.querySelector('input#userpassword').value
         const p2 = form.querySelector('input#repeatpassword').value
         if (p1 === p2) return true
-        return false
+        else {
+            setisAlert(true)
+            setalertMessage("Repeat with same password")
+            setalertType("danger")
+            setisLoading(false)
+            return false
+        }
     }
 
     const displaySelectedImages = (elem, file) => {
 
         const label = elem.querySelector('label')
         const img = elem.querySelector('img')
+        const maxSize = 5 * 1024 * 1024
+        console.log(file.size)
+        if (file.size > maxSize) {
+            setisAlert(true)
+            setalertMessage("Use a samller image with maximum size 2mb")
+            setalertType("danger")
+            return false;
+        }
 
         img.src = URL.createObjectURL(file)
 
@@ -62,6 +82,13 @@ const Signup = () => {
                     body: formdata
                 })
                 let data = await res.json()
+                if (data.error) {
+                    setisAlert(true)
+                    setalertMessage(data.message)
+                    setalertType("danger")
+                    setisLoading(false)
+                    return;
+                }
                 // console.log(data)
 
                 //form data for storing other details
@@ -82,16 +109,32 @@ const Signup = () => {
                     body: formdata
                 })
                 data = await res.json()
-                // console.log(data)
-                
+                console.log(data)
+                setisLoading(false)
+                if (data.error) {
+                    setisAlert(true)
+                    setalertMessage(data.message)
+                    setalertType("danger")
+                    return;
+                } else {
+                    setisAlert(true)
+                    setalertMessage("user created successfully")
+                    setalertType("success")
+
+                }
                 //store user id and token to localStorage
-                localStorage.setItem('userId' , data.userId)
-                localStorage.setItem('token' , data.token)
+                localStorage.setItem('userId', data.userId)
+                localStorage.setItem('token', data.token)
 
                 navigate('/')
 
+
             } catch (error) {
                 console.log(error.message)
+                setisAlert(true)
+                setalertMessage(error.message)
+                setalertType("danger")
+                setisLoading(false)
             }
 
         })() : (() => {
@@ -100,11 +143,28 @@ const Signup = () => {
 
     }
 
+    useEffect(() => {
+        if (isAlert) {
+            setTimeout(() => {
+                setisAlert(false)
+            }, 2000);
+        }
+    }, [isAlert])
+
+
     return (
-        <div id='signup' className='bg-[#bbbbbb88] flex justify-center bg-cover bg-no-repeat' style={{ backgroundImage: `url(${bgimg})` }}>
+        <div id='signup' className='bg-[#bbbbbb88] flex justify-center bg-cover bg-no-repeat relative' style={{ backgroundImage: `url(${bgimg})` }}>
+
+            {/* alert component  */}
+
+            {isAlert && <div className=' fixed z-50 top-0 left-0 w-full'>
+                <Alert type={alertType} message={alertMessage} />
+            </div>}
+
             <div className="form md:w-7/12 sm:w-9/12 w-full md:p-3 p-2 md:m-4 sm:my-4 bg-[#7878785c] backdrop-blur-md">
                 <form action="" className=' w-full' onSubmit={(e) => {
                     e.preventDefault()
+                    setisLoading(true)
                     creatAccount(e.currentTarget)
                 }}>
 
@@ -204,7 +264,9 @@ l-5 -148 -385 0 c-428 0 -453 -3 -574 -66 -121 -63 -226 -189 -272 -323 l-22
 
                     {/* submit button  */}
                     <div className=' flex justify-center mt-6'>
-                        <button className=' md:text-base text-sm outline-none py-2 px-4 bg-blue-700 text-white rounded-full'>Create account</button>
+                        <button className=' md:text-base text-sm outline-none py-2 px-4 bg-blue-700 text-white rounded-full' disabled={isLoading}>
+                            {isLoading ? <i className="fa-solid fa-spinner fa-spin text-2xl"></i> : " Create account"}
+                        </button>
                     </div>
 
                     {/* already have an account  */}
