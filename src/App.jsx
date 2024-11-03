@@ -7,6 +7,7 @@ import UserContext from './context/usercontext';
 import Profile from './user/Profile'
 import Login from './components/forms/Login';
 import Signup from './components/forms/Signup';
+import Post from './components/Social/Post';
 
 function App() {
 
@@ -34,6 +35,10 @@ function App() {
     {
       path: "/",
       element: <Profile />
+    },
+    {
+      path: "/post",
+      element: <Post />
     },
     {
       path: "/login",
