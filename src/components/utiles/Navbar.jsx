@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom'
 
 const Navbar = () => {
     return (
-        <nav id='navbar' className='  top-0 p-2 bg-slate-100 '>
+        <nav id='navbar' className=' absolute w-full z-10 top-0 p-2 bg-slate-100 '>
             <div className=' w-full flex justify-between items-center'>
-
+               
+               {/* logo and search bar  */}
                 <div className='flex items-center'>
                     {/* logo  */}
                     <Link to="/" className="logo w-12 h-12 ">
@@ -25,10 +26,10 @@ const Navbar = () => {
 
                 {/* nev menu bar  */}
                 <div className="menu flex justify-center items-center gap-4 px-3">
-                    <Link to="/post" className=' cursor-pointer hover:underline underline-offset-8'>Posts</Link>
+                    <Link to="/" className=' cursor-pointer hover:underline underline-offset-8'>Posts</Link>
                     <div className=' cursor-pointer hover:underline underline-offset-8'>Notifications</div>
                     <div className=' cursor-pointer hover:underline underline-offset-8'>Connections</div>
-                    <div className=' cursor-pointer text-xl'><i className="fa-solid fa-user"></i></div>
+                    <Link to='/profile' className=' cursor-pointer text-xl'><i className="fa-solid fa-user"></i></Link>
                 </div>
             </div>
         </nav>

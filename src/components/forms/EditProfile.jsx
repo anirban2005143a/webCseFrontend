@@ -118,7 +118,7 @@ const EditProfile = (props) => {
     }, [isAlert])
 
     return (
-        <div id='editProfile' className={`md:w-7/12 w-full md:my-10 my-4 overflow-auto relative`}>
+        <div id='editProfile' className={`md:w-7/12 w-full md:my-10 my-4 overflow-auto z-50 relative`}>
             {/* alert component  */}
 
             {isAlert && <div className=' fixed z-50 top-0 left-0 w-full'>

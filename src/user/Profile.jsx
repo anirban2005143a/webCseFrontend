@@ -4,18 +4,34 @@ import EditProfile from '../components/forms/EditProfile'
 import userContext from '../context/usercontext'
 import LoadingPage from '../components/utiles/LoadingPage'
 import Navbar from '../components/utiles/Navbar'
+import CreatePost from '../components/forms/CreatePost'
 
 
 const Profile = () => {
 
     const value = useContext(userContext)
     const [isEditForm, setisEditForm] = useState(false)
+    const [isCreatePost, setisCreatePost] = useState(false)
     const [userDetails, setuserDetails] = useState({})
     const [profileImg, setprofileImg] = useState(null)
     const [backgroundImg, setbackgroundImg] = useState(null)
 
     const navigate = useNavigate()
     const backendUrl = import.meta.env.VITE_REACT_BACKEND_URL
+
+
+    const checkUser = async () => {
+
+        const userId = localStorage.getItem('userId')
+        const token = localStorage.getItem('token')
+
+        if (userId && token) {
+            const res = await value.checkUser
+            !res ? navigate('/login') : fetchData()
+        } else {
+            navigate('/login')
+        }
+    }
 
     const fetchData = async () => {
         const res = await fetch(`${backendUrl}/api/auth/fetch`, {
@@ -53,15 +69,15 @@ const Profile = () => {
     }
 
     useEffect(() => {
-        !value.checkUser() ? navigate("/login") : fetchData()
+        checkUser()
     }, [])
 
     useEffect(() => {
-        isEditForm ? (() => {
+        isEditForm || isCreatePost ? (() => {
             document.body.style.overflow = 'hidden'
             window.scrollTo(0, 0)
         })() : document.body.style.overflow = ''
-    }, [isEditForm])
+    }, [isEditForm, isCreatePost])
 
 
     return (
@@ -70,23 +86,31 @@ const Profile = () => {
             {/* navbar  */}
             <Navbar />
 
-            <div id='profile' className='flex justify-center relative mt-2' >
+            {/* loading icon while data is fetching  */}
+            {Object.keys(userDetails).length === 0 && <LoadingPage />}
 
-                {/* loading icon while data is fetching  */}
-                {Object.keys(userDetails).length === 0 && <LoadingPage />}
+            {/* edit user form modal  */}
+            <div className={` absolute top-0 left-0 w-full h-[100vh] flex justify-center z-10 bg-[rgba(0,0,0,0.5)] transition-all duration-1000 ${isEditForm ? " translate-y-0 " : " -translate-y-[150%] "}`}>
+                <EditProfile
+                    isEditForm={isEditForm}
+                    setisEditForm={setisEditForm}
+                    userDetails={userDetails}
+                    setuserDetails={setuserDetails}
+                    profileImg={profileImg}
+                    fetchProfileImg={fetchProfileImg} />
+            </div>
 
-                {/* form modal  */}
-                <div className={` absolute top-0 left-0 w-full h-[100vh] flex justify-center z-10 bg-[rgba(0,0,0,0.5)] transition-all duration-1000 ${isEditForm ? " translate-y-0 " : " -translate-y-[150%] "}`}>
-                    <EditProfile
-                        isEditForm={isEditForm}
-                        setisEditForm={setisEditForm}
-                        userDetails={userDetails}
-                        setuserDetails={setuserDetails}
-                        profileImg={profileImg}
-                        fetchProfileImg={fetchProfileImg} />
-                </div>
+            {/* edit user form modal  */}
+            <div className={` absolute top-0 left-0 w-full h-[100vh] flex justify-center z-10 bg-[rgba(0,0,0,0.5)] transition-all duration-1000 ${isCreatePost ? " translate-y-0 " : " -translate-y-[150%] "}`}>
+                <CreatePost
+                    isCreatePost={isCreatePost}
+                    setisCreatePost={setisCreatePost} />
+            </div>
 
-                {Object.keys(userDetails).length !== 0 && <div className=' md:w-8/12 w-full md:p-3 p-2 md:m-4'>
+
+            <div id='profile' className='flex justify-center relative' >
+
+                {Object.keys(userDetails).length !== 0 && <div className=' md:w-8/12 w-full pt-24 pb-3 md:mx-2 mx-1 '>
 
                     {/* profile picture and name , tag , location , connections  */}
                     <header className=' '>
@@ -129,7 +153,9 @@ const Profile = () => {
                         <div className="posts rounded-md p-2 my-4 bg-[rgb(232,234,246)] ">
                             <div className='flex justify-between items-center'>
                                 <h3 className='font-normal text-xl px-3'>Posts</h3>
-                                <div className="edit cursor-pointer text-2xl p-3 hover:scale-110"><i className="fa-solid fa-plus"></i></div>
+                                <div className="edit cursor-pointer text-2xl p-3 hover:scale-110" onClick={(e) => {
+                                    setisCreatePost(true)
+                                }}><i className="fa-solid fa-plus"></i></div>
                             </div>
                         </div>
 

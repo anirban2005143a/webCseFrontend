@@ -156,7 +156,6 @@ const Signup = () => {
         <div id='signup' className='bg-[#bbbbbb88] flex justify-center bg-cover bg-no-repeat relative' style={{ backgroundImage: `url(${bgimg})` }}>
 
             {/* alert component  */}
-
             {isAlert && <div className=' fixed z-50 top-0 left-0 w-full'>
                 <Alert type={alertType} message={alertMessage} />
             </div>}

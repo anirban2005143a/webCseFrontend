@@ -18,26 +18,31 @@ function App() {
     const userId = localStorage.getItem('userId')
     const token = localStorage.getItem('token')
 
-    const res = await fetch(`${backendUrl}/api/auth/checkUser`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        token,
-      },
-      body: JSON.stringify({ userId })
-    })
-    const data = await res.json()
-    // console.log(data)
-    return data.error ? false : true
+    if (userId && token) {
+      const res = await fetch(`${backendUrl}/api/auth/checkUser`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          token,
+        },
+        body: JSON.stringify({ userId })
+      })
+      const data = await res.json()
+      // console.log(data)
+      return data.error ? false : true
+    } else {
+      return false
+    }
+
   }
 
   const router = createBrowserRouter([
     {
-      path: "/",
+      path: "/profile",
       element: <Profile />
     },
     {
-      path: "/post",
+      path: "/",
       element: <Post />
     },
     {
