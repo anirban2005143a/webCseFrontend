@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Alert from '../utiles/Alert'
+import { useNavigate } from 'react-router-dom'
 
 const CreatePost = (props) => {
 
@@ -8,6 +9,7 @@ const CreatePost = (props) => {
     const [alertType, setalertType] = useState("danger")
     const [isLoading, setisLoading] = useState(false)
 
+    const nevigate = useNavigate()
     const backendUrl = import.meta.env.VITE_REACT_BACKEND_URL
 
     const displaySelectedImages = (elem, file) => {
@@ -66,6 +68,7 @@ const CreatePost = (props) => {
                 return;
             }
 
+            nevigate('/')
             const closeBtn = document.querySelector('#CreatePost').querySelector("button.closeBtn")
             closeBtn.click()
 
